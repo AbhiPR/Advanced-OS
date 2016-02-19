@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -45,28 +46,28 @@ public class Node implements Runnable {
 		else
 			try {
 				runClient();
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 	}
 
-	private void runClient() throws FileNotFoundException {
+	private void runClient() throws UnknownHostException, IOException {
 		find(config_file_path, identifier);
 		while (true) {
 
 			if (root == identifier || !getParent().equals("")) {
 				// display();
-				
+
 				neighbours.remove(getParent());
 				Client_node c = new Client_node(neighbours, all_nodes, identifier);
 				c.exp();
 				// System.out.println(neighbours+" "+ all_nodes);
 				break;
 
+			} else if (root == -2) {
+				break;
 			}
-			else if(root==-2)
-			{break;}
 		}
 
 	}
@@ -78,22 +79,21 @@ public class Node implements Runnable {
 	public static String getParent() {
 		return parent;
 	}
-	
 
 	private void runServer() throws IOException {
 		find(config_file_path, identifier);
 		// explore();
 		listen();
 		// display();
-		//System.out.println("server:");
+		// System.out.println("server:");
 
 	}
 
 	private void listen() throws IOException {
-	     server_socket=new ServerSocket(port);
-		 while(true)
-		{
-			Server_node snode = new Server_node(server_socket.accept(),this.identifier, this.all_nodes, this.neighbours);
+		server_socket = new ServerSocket(port);
+		while (true) {
+			Server_node snode = new Server_node(server_socket.accept(), this.identifier, this.all_nodes,
+					this.neighbours);
 			Thread t = new Thread(snode);
 			t.start();
 
