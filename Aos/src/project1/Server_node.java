@@ -18,15 +18,15 @@ public class Server_node implements Runnable {
 	private int id;
 	private String[] all_nodes;
 	private Queue<String> neighbour;
-	private Socket soc;
+	private Socket soc_server;
 	// private int distance = 0;
 	private String parent = "";
 	private ArrayList<String> child = new ArrayList<String>();
 
 	// Client_node c;
 
-	public Server_node(int id, String[] all_nodes, Queue<String> neighbour) {
-		// this.soc=a;
+	public Server_node(Socket a, int id, String[] all_nodes, Queue<String> neighbour) {
+		this.soc_server = a;
 		this.id = id;
 		this.all_nodes = all_nodes;
 		this.neighbour = neighbour;
@@ -52,19 +52,20 @@ public class Server_node implements Runnable {
 	@Override
 	public void run() {
 
-		/*try {
-			String h = InetAddress.getLocalHost().getHostName();
-			System.out.println(h);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}*/
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		// BufferedReader in = new BufferedReader(new
+		// InputStreamReader(System.in));
+		BufferedReader br;
 		String s;
-		int count = 0;
-		while (count != neighbour.size()) {
-			try {
-				s = in.readLine();
-				if (s.split("\\s+")[0].equals("exp")&& Node.root!=id) {
+		try {
+			br = new BufferedReader(new InputStreamReader(soc_server.getInputStream()));
+			while ((s = br.readLine()) != null) {
+			}
+
+			int count = 0;
+			while (count != neighbour.size()) {
+
+				// s = in.readLine();
+				if (s.split("\\s+")[0].equals("exp") && Node.root != id) {
 					if (parent.equals("")) {
 						parent = s.split("\\s+")[1];
 						Node.setParent(parent);
@@ -78,7 +79,7 @@ public class Server_node implements Runnable {
 								break;
 							}
 						}
-						
+
 					} else {
 						String pt = s.split("\\s+")[1];
 						for (String i : all_nodes) {
@@ -116,20 +117,21 @@ public class Server_node implements Runnable {
 							.println("id: " + id + "\nall nodes: " + Arrays.toString(all_nodes).replaceAll("\\t+", " ")
 									+ "\nneighbours: " + neighbour + "\nParent" + parent + "\nchild" + child);
 
-			} catch (IOException e) {
-
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+
+			e.printStackTrace();
 		}
+
 		try {
 			outfile();
-			Node.root=-2;
+			Node.root = -2;
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		System.out.println("server exit");
-		//Thread.currentThread().interrupt();
-	//	return;
+		// Thread.currentThread().interrupt();
+		// return;
 
 	}
 

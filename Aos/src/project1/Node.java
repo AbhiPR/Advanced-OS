@@ -90,10 +90,10 @@ public class Node implements Runnable {
 	}
 
 	private void listen() throws IOException {
-		// server_socket=new ServerSocket(port);
-		// while(true)
+	     server_socket=new ServerSocket(port);
+		 while(true)
 		{
-			Server_node snode = new Server_node(this.identifier, this.all_nodes, this.neighbours);
+			Server_node snode = new Server_node(server_socket.accept(),this.identifier, this.all_nodes, this.neighbours);
 			Thread t = new Thread(snode);
 			t.start();
 
