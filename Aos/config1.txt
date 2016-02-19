@@ -1,0 +1,24 @@
+# NOT GUARANTEED TO BE PROPER FORMAT FOR THIS YEAR'S CONFIG.
+# READ THE PROJECT DESCRIPTION CAREFULLY.
+
+#Node_count minPerActive maxPerActive  sendMinDelay  snapshotDelay  maxNumber
+
+6 	4
+
+0 	dc45	19999 
+1	dc44	19998
+2	dc43	19997
+3	dc42	19996
+4	dc41	19995
+5	dc40	19898
+
+1	3
+0	2	5
+1	3
+0	2	4
+3	5
+1	4
+
+
+
+
