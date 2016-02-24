@@ -1,7 +1,5 @@
 package project1;
 
-import java.util.Arrays;
-
 public class Start implements Runnable {
 
 	private int id;
@@ -17,8 +15,9 @@ public class Start implements Runnable {
 		startNode(1);
 
 		long s = System.currentTimeMillis();
-		while (System.currentTimeMillis() < s + 3000) {
+		while (System.currentTimeMillis() < s + 1000) {
 		}
+
 		startNode(0);
 
 	}
@@ -32,9 +31,7 @@ public class Start implements Runnable {
 
 	public static void main(String[] args) {
 		int no_of_node = Integer.parseInt(args[0]);
-		String config_path = "config1.txt";
-		// String h=
-		// System.out.println(config_path.split("\\.")));
+		String config_path = args[1];
 		Start start = new Start(no_of_node, config_path);
 		Thread t = new Thread(start);
 		t.start();

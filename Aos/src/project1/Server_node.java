@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
@@ -17,15 +15,14 @@ import java.util.Queue;
 public class Server_node implements Runnable {
 	private int id;
 	private String[] all_nodes;
-	private Queue<String> neighbour;
+	private static volatile Queue<String> neighbour;
 	private Socket soc_server;
-	// private int distance = 0;
 	private String parent = "";
 	private ArrayList<String> child = new ArrayList<String>();
-
-	// Client_node c;
+	private static volatile int count = 0;
 
 	public Server_node(Socket a, int id, String[] all_nodes, Queue<String> neighbour) {
+
 		this.soc_server = a;
 		this.id = id;
 		this.all_nodes = all_nodes;
@@ -33,17 +30,24 @@ public class Server_node implements Runnable {
 	}
 
 	public void outfile() throws FileNotFoundException, UnsupportedEncodingException {
-		String filename = Node.config_file_path.split("\\.")[0];
+
+		int s = Node.config_file_path.lastIndexOf('/');
+		int d = Node.config_file_path.lastIndexOf('.');
+		String filename = Node.config_file_path.substring(s + 1, d);
+
+		System.out.println(filename);
 		File f = new File(filename + "-" + id + ".out");
 		PrintWriter writer = new PrintWriter(f, "UTF-8");
-		if (parent.equals(""))
+		String p = Node.getParent();
+		ArrayList<String> c = Node.getChild();
+		if (p.equals(""))
 			writer.println("*");
 		else
-			writer.println(parent);
-		if (child.isEmpty())
+			writer.println(p);
+		if (c.isEmpty())
 			writer.println("*");
 		else
-			for (String i : child)
+			for (String i : c)
 				writer.print(i + " ");
 
 		writer.close();
@@ -52,21 +56,24 @@ public class Server_node implements Runnable {
 	@Override
 	public void run() {
 
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(System.in));
 		BufferedReader br;
+		String k;
+
 		String s;
+
 		try {
 			br = new BufferedReader(new InputStreamReader(soc_server.getInputStream()));
-			while ((s = br.readLine()) != null) {
-			}
 
-			int count = 0;
 			while (count != neighbour.size()) {
+				s = "";
+				while ((k = br.readLine()) != null) {
+					s = k;
+				}
 
-				// s = in.readLine();
 				if (s.split("\\s+")[0].equals("exp") && Node.root != id) {
-					if (parent.equals("")) {
+
+					if (Node.getParent().equals("")) {
+
 						parent = s.split("\\s+")[1];
 						Node.setParent(parent);
 						neighbour.remove(parent);
@@ -81,13 +88,13 @@ public class Server_node implements Runnable {
 						}
 
 					} else {
+
 						String pt = s.split("\\s+")[1];
 						for (String i : all_nodes) {
 							if (i.split("\\s+")[0].equals(pt)) {
 								String host = i.split("\\s+")[1];
 								String port = i.split("\\s+")[2];
 								Client_node c = new Client_node(neighbour, all_nodes, id);
-								// c=new Client_node();
 								c.connect(host, port, "nack " + id);
 								break;
 							}
@@ -95,28 +102,19 @@ public class Server_node implements Runnable {
 
 					}
 
-				}
-				/*
-				 * else if(distance>Integer.parseInt(s.split("\\s+")[2])) {
-				 * parent = s.split("\\s+")[1]; Node.setParent(parent);
-				 * distance=Integer.parseInt(s.split("\\s+")[2]);
-				 * System.out.println("ack"); } }
-				 */
-				else if (s.split("\\s+")[0].equals("ack")) {
-					child.add(s.split("\\s+")[1]);
+				} else if (s.split("\\s+")[0].equals("ack")) {
+					Node.setChild(s.split("\\s+")[1]);
 					count++;
 
 				} else if (s.split("\\s+")[0].equals("nack")) {
 					count++;
-				}
 
-				else if (s.equals("b"))
+				} else if (s.equals("b"))
 					break;
 				else if (s.equals("d"))
 					System.out
 							.println("id: " + id + "\nall nodes: " + Arrays.toString(all_nodes).replaceAll("\\t+", " ")
 									+ "\nneighbours: " + neighbour + "\nParent" + parent + "\nchild" + child);
-
 			}
 		} catch (IOException e) {
 
@@ -124,14 +122,14 @@ public class Server_node implements Runnable {
 		}
 
 		try {
+
 			outfile();
 			Node.root = -2;
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			soc_server.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("server exit");
-		// Thread.currentThread().interrupt();
-		// return;
+		return;
 
 	}
 
