@@ -90,6 +90,7 @@ public class Server_node implements Runnable {
 					} else {
 
 						String pt = s.split("\\s+")[1];
+						neighbour.remove(pt);
 						for (String i : all_nodes) {
 							if (i.split("\\s+")[0].equals(pt)) {
 								String host = i.split("\\s+")[1];
