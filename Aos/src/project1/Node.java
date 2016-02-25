@@ -183,9 +183,4 @@ public class Node implements Runnable {
 
 	}
 
-	public void display() {
-		System.out.println("id: " + (identifier) + "\nNumber of node: " + number_of_nodes + "\nall nodes: "
-				+ Arrays.toString(all_nodes).replaceAll("\\t+", " ") + "\nnode_info" + Arrays.toString(info)
-				+ "\nhost & port :" + hostname + " " + port + "\nneighbours: " + neighbours);
-	}
 }

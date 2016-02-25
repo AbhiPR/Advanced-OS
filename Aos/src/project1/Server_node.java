@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Queue;
 
 public class Server_node implements Runnable {
@@ -40,6 +41,9 @@ public class Server_node implements Runnable {
 		PrintWriter writer = new PrintWriter(f, "UTF-8");
 		String p = Node.getParent();
 		ArrayList<String> c = Node.getChild();
+		if(!c.isEmpty())
+			Collections.sort(c);
+			
 		if (p.equals(""))
 			writer.println("*");
 		else
@@ -110,12 +114,7 @@ public class Server_node implements Runnable {
 				} else if (s.split("\\s+")[0].equals("nack")) {
 					count++;
 
-				} else if (s.equals("b"))
-					break;
-				else if (s.equals("d"))
-					System.out
-							.println("id: " + id + "\nall nodes: " + Arrays.toString(all_nodes).replaceAll("\\t+", " ")
-									+ "\nneighbours: " + neighbour + "\nParent" + parent + "\nchild" + child);
+				}
 			}
 		} catch (IOException e) {
 
